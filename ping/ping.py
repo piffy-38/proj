@@ -6,8 +6,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QButtonGroup, QWidget, QLabel, QRadioButton, QHBoxLayout, QPushButton, QVBoxLayout, QMessageBox, QGroupBox
 mixer.init()
 font.init()
-font = font.Font(None, 36)
-pL_lose = font.render('ИГРОК 1 ПРОИГРАЛ', True, (200, 0, 0))
+stat_font = font.SysFont('Arial', 36)
+winlose_font = font.SysFont('Arial', 72)
+pL_lose = stat_font.render('ИГРОК 1 ПРОИГРАЛ', True, (200, 0, 0))
 win_width = 700
 win_height = 500
 clock = time.Clock()
@@ -18,6 +19,8 @@ lost = 0
 a = True
 b = 0
 c = 0
+fail1=0
+fail2=0
 print(b)
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
@@ -35,7 +38,7 @@ class GameSprite(sprite.Sprite):
 class Player_1(GameSprite):
     def update(self):
         keys = key.get_pressed()
-        if keys[K_UP] and self.rect.y > 5:
+        if keys[K_UP] and self.rect.y > 55:
             self.rect.y -= self.speed
         if keys[K_DOWN] and self.rect.y < 500-200:
             self.rect.y += self.speed
@@ -43,7 +46,7 @@ class Player_1(GameSprite):
 class Player_2(GameSprite):
     def update(self):
         keys = key.get_pressed()
-        if keys[K_w] and self.rect.y > 5:
+        if keys[K_w] and self.rect.y > 55:
             self.rect.y -= self.speed
         if keys[K_s] and self.rect.y < 500-200:
             self.rect.y += self.speed
@@ -93,6 +96,8 @@ class Ball(GameSprite):
                 self.rect.x -= self.speed
             if c == 3:
                 self.rect.x += self.speed
+        
+
             
         
     def update2(self):
@@ -144,11 +149,12 @@ class Wall(sprite.Sprite):
     def draw_wall(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
 
-
+hp1 = stat_font.render('ОЧК1:' + str(fail1), 1, (255, 0, 0))
+hp2 = stat_font.render('ОЧК2:' + str(fail2), 1, (255, 0, 0))
 player1 = Player_1('player1.png', 10, 320, 25, 200, 10)
 player2 = Player_2('player2.png', 650, 320, 75, 200, 10)
 ball = Ball('bal.png', 150, 250, 50, 50, 7.5)
-wall1 = Wall(255, 255, 255, -19, -19, 750, 20)
+wall1 = Wall(0, 0, 0, 0, 50, 750, 20)
 wall2 = Wall(255, 255, 255, 0, 499, 750, 20)
 
 finish = False
@@ -158,7 +164,7 @@ while game:
         if e.type == QUIT:
             game = False
 
-    if not finish:
+    if finish != True:
         window.blit(background, (0,0))
 
         player1.reset()
@@ -170,7 +176,29 @@ while game:
         ball.update2()
         wall1.draw_wall()
         wall2.draw_wall()
-        
+        window.blit(hp1, (0,0))
+        window.blit(hp2, (550, 0))
+        if ball.rect.x < 0:
+            a = True
+            b = 0
+            c = 0
+            ball.rect.x = 150
+            ball.rect.y = 250
+            fail1 += 1
+            hp1 = stat_font.render('ОЧК1:' + str(fail1), 1, (255, 0, 0))
+            text0 = winlose_font.render('FAILED!', 1, (180, 0, 0))
+            window.blit(text0, (100, 100))
+        if ball.rect.x > 700:
+            a = True
+            b = 0
+            c = 0
+            ball.rect.x = 150
+            ball.rect.y = 250
+            fail2 += 1
+            hp2 = stat_font.render('ОЧК2:' + str(fail2), 1, (255, 0, 0))
+            text1 = winlose_font.render('FAILED!', 1, (180, 0, 0))
+            window.blit(text1, (100, 100))
 
         display.update()
         clock.tick(fps)
+        
