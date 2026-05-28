@@ -6,6 +6,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QButtonGroup, QWidget, QLabel, QRadioButton, QHBoxLayout, QPushButton, QVBoxLayout, QMessageBox, QGroupBox, QInputDialog
 mixer.init()
 font.init()
+menumusic = mixer.Sound('ping/MENU.mp3')
+paused = mixer.Sound('ping/PAUSED.mp3')
+ingame = mixer.Sound('ping/INGAME.mp3')
 stat_font = font.SysFont('Arial', 36)
 winlose_font = font.SysFont('Arial', 72)
 pL_lose = stat_font.render('ИГРОК 1 ПРОИГРАЛ', True, (200, 0, 0))
@@ -14,6 +17,10 @@ win_height = 500
 clock = time.Clock()
 window = display.set_mode((win_width,win_height))
 background = transform.scale(image.load('ping/bak.jpg'), (win_width,win_height))
+background2 = transform.scale(image.load('ping/DSC_0486.jpg'), (win_width,win_height))
+background3 = transform.scale(image.load('ping/photo_2025-03-14_18-19-51.jpg'), (win_width,win_height))
+background4 = transform.scale(image.load('ping/photo_2025-05-08_22-40-26.jpg'), (win_width,win_height))
+background5 = transform.scale(image.load('ping/avatars-linrvoMB2op3z8kV-bOyWUg-t240x240.jpg'), (win_width,win_height))
 app = QApplication([])
 xuindow = QWidget()
 ask1 = QInputDialog()
@@ -31,11 +38,14 @@ finish = True
 game = True
 set_clicked = False
 gamecont = False
-vol = 0
+vol = 0.5
 player1_name = 'EXAMPLE1'
 player2_name = 'EXAMPLE2'
 diff_count = 0
 difficulty = "Normal"
+music = 0
+back = randint(0,4)
+
 
 
 
@@ -229,6 +239,7 @@ btn_p2name.set_text('Ent_')
 btn_diffUP.set_text('+')
 btn_diffDOWN.set_text('-')
 #текст1
+
 while game:
     for e in event.get():
         if e.type == QUIT:
@@ -248,14 +259,18 @@ while game:
                 if btn_BACK.collide_point(x, y):
                     set_clicked = False
                 if btn_volumeDOWN.collide_point(x,y):
-                    vol -= 1
+                    vol -= 0.1
+                    menumusic.set_volume(vol)
+                    ingame.set_volume(vol)
                     if vol < 0:
                         vol = 0
                     volume_counter = stat_font.render(str(vol), 1, (255, 255, 255))
                 if btn_volumeUP.collide_point(x,y):
-                    vol += 1
-                    if vol > 10:
-                        vol = 10
+                    vol += 0.1
+                    if vol > 1:
+                        vol = 1
+                    menumusic.set_volume(vol)
+                    ingame.set_volume(vol)
                     volume_counter = stat_font.render(str(vol), 1, (255, 255, 255))
                 if btn_p1name.collide_point(x,y):
                     p1, ok = ask1.getText(xuindow, 'Player 1', 'Enter Player Name')
@@ -315,10 +330,23 @@ while game:
         if e.type == KEYDOWN:
             if e.key == K_ESCAPE:
                 finish = True
+
     hp1 = stat_font.render(player1_name + ':' + str(fail1), 1, (255, 0, 0))
     hp2 = stat_font.render(player2_name + ':' + str(fail2), 1, (255, 0, 0))
     if finish == False:
-        window.blit(background, (0,0))
+        vol = 0.5
+        if back == 0:
+            window.blit(background, (0,0))
+        elif back == 1:
+            window.blit(background2, (0,0))
+        elif back == 2:
+            window.blit(background3, (0,0))
+        elif back == 3:
+            window.blit(background4, (0,0))
+        elif back == 4:
+            window.blit(background5, (0,0))
+        else:
+            window.blit(background, (0,0))
         player1.reset()
         player1.update()
         player2.reset()
@@ -352,16 +380,61 @@ while game:
             hp2 = stat_font.render(player2_name + ':' + str(fail2), 1, (255, 0, 0))
             text1 = winlose_font.render('FAILED!', 1, (180, 0, 0))
             window.blit(text1, (100, 100))
+        if fail1 > 10 or fail2 > 10:
+            finish = True
+            lost = 0
+            a = True
+            b = 0
+            c = 0
+            fail1=0
+            fail2=0
+            finish = True
+            game = True
+            set_clicked = False
+            ball_speed = 10
+            gamecont = False
+            vol = 0
+            player1_name = 'EXAMPLE1'
+            player2_name = 'EXAMPLE2'
+            player1.rect.x = 10 
+            player1.rect.y = 320
+            player2.rect.x = 650
+            player2.rect.y = 320
+            ball.rect.x = 150
+            ball.rect.y = 250
+            difficulty = "Normal"
     else:
         if set_clicked == False and gamecont == False:
-            window.blit(background, (0,0))
+            if back == 0:
+                window.blit(background, (0,0))
+            elif back == 1:
+                window.blit(background2, (0,0))
+            elif back == 2:
+                window.blit(background3, (0,0))
+            elif back == 3:
+                window.blit(background4, (0,0))
+            elif back == 4:
+                window.blit(background5, (0,0))
+            else:
+                window.blit(background, (0,0))
             btn_start.set_text('Start the game', 38)
             menu_text = winlose_font.render('Menu', 1, (180, 0, 0))
             window.blit(menu_text, (300, 50))
             btn_start.draw()    
             btn_set.draw()
         if set_clicked == False and gamecont == True:
-            window.blit(background, (0,0))
+            if back == 0:
+                window.blit(background, (0,0))
+            elif back == 1:
+                window.blit(background2, (0,0))
+            elif back == 2:
+                window.blit(background3, (0,0))
+            elif back == 3:
+                window.blit(background4, (0,0))
+            elif back == 4:
+                window.blit(background5, (0,0))
+            else:
+                window.blit(background, (0,0))
             btn_start.set_text('Continue?', 52)
             menu_text = winlose_font.render('PAUSED', 1, (180, 0, 0))
             window.blit(menu_text, (250, 50))
@@ -369,7 +442,18 @@ while game:
             btn_set.draw()
             btn_BACKtoMAIN.draw()
         if set_clicked == True:
-            window.blit(background, (0,0))
+            if back == 0:
+                window.blit(background, (0,0))
+            elif back == 1:
+                window.blit(background2, (0,0))
+            elif back == 2:
+                window.blit(background3, (0,0))
+            elif back == 3:
+                window.blit(background4, (0,0))
+            elif back == 4:
+                window.blit(background5, (0,0))
+            else:
+                window.blit(background, (0,0))
             btn_volumeUP.draw()
             btn_volumeDOWN.draw()
             btn_BACK.draw()
@@ -384,7 +468,27 @@ while game:
             window.blit(p2name, (5,155))
             window.blit(diff, (530, 80))
             window.blit(diff_counter, (525,45))
+    if set_clicked == False and gamecont == False and music < 1:
+        ingame.stop()
+        menumusic.play(-1)
+        vol = 0.5
+        music += 1
+        menumusic.set_volume(vol)
+        print(music)
+    if finish == False and music == 1:
+        music = 0
+        menumusic.stop()
+        ingame.play()
+        print(music)
+    if set_clicked == True and gamecont == True and music == 1:
+        music = 0
+        ingame.stop()
+        menumusic.stop()
+        paused.play()
+
 
     display.update()
     clock.tick(fps)
-    
+
+
+#звук доделать, кнопки
