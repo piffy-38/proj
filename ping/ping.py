@@ -29,6 +29,7 @@ app = QApplication([])
 xuindow = QWidget()
 ask1 = QInputDialog()
 ask2 = QInputDialog()
+ask3 = QInputDialog()
 display.set_caption('САМАЯ ЛУЧШАЯ КЛАССНАЯ ИГРА 100% КЛУБНЯК 2007')
 
 #счётчикиНЕ ТРОГАТЬ
@@ -240,6 +241,7 @@ btn_BACK = Button(10, 10, 40, 40)
 btn_BACKtoMAIN = Button(0, 460, 40, 40)
 btn_p1name = Button(130, 128, 25, 25)
 btn_p2name = Button(130, 168, 25, 25)
+btn_fps = Button(560, 168, 25, 25)
 btn_diffUP = Button(480, 55, 25, 25)
 btn_diffDOWN = Button(650, 55, 25, 25)
 btn_BACK.set_text('<-')
@@ -250,6 +252,7 @@ btn_p1name.set_text('Ent_')
 btn_p2name.set_text('Ent_')
 btn_diffUP.set_text('+')
 btn_diffDOWN.set_text('-')
+btn_fps.set_text('Ent_')
 #текст1
 
 while game:
@@ -304,6 +307,11 @@ while game:
                     p2, ok = ask2.getText(xuindow, 'Player 2', 'Enter Player 2 Name')
                     if ok and p2:
                         player2_name = str(p2)
+                if btn_fps.collide_point(x,y):
+                    button_click.play()
+                    fps2, ok = ask3.getText(xuindow, 'FPS', 'Enter FPS (dont enter massive numbers)')
+                    if ok and fps:
+                        fps = int(fps2)
                     #здесь p1 и ok отвечают за 2 типа данных, которые выдает .getText - p1 это string, ok - True или False,
                     #ok мне не нужна, и поэтому я просто беру и печатаю p1 которая забрала в себя строку, введеную пользователем
                 if btn_diffUP.collide_point(x,y):
@@ -488,6 +496,7 @@ while game:
             btn_p2name.draw()
             btn_diffUP.draw()
             btn_diffDOWN.draw()
+            btn_fps.draw()
             window.blit(volume, (5, 80))
             window.blit(volume_counter, (90,43))
             window.blit(pname, (5, 200))
