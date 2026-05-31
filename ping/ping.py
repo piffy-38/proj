@@ -9,6 +9,10 @@ font.init()
 menumusic = mixer.Sound('ping/MENU.mp3')
 paused = mixer.Sound('ping/PAUSED.mp3')
 ingame = mixer.Sound('ping/INGAME.mp3')
+bounce1 = mixer.Sound('ping/Discord Push To Talk; Active Sound Effect (HD) (2).mp3')
+bounce2 = mixer.Sound('ping/Discord Push To Talk; Deactivate Sound Effect (HD) (2).mp3')
+button_click = mixer.Sound('ping/Button Press Sound Effect (Free Use) (mp3cut.net).mp3')
+warn = mixer.Sound('ping/Skype - All Old Sounds (mp3cut.net).mp3')
 stat_font = font.SysFont('Arial', 36)
 winlose_font = font.SysFont('Arial', 72)
 pL_lose = stat_font.render('ИГРОК 1 ПРОИГРАЛ', True, (200, 0, 0))
@@ -25,6 +29,7 @@ app = QApplication([])
 xuindow = QWidget()
 ask1 = QInputDialog()
 ask2 = QInputDialog()
+display.set_caption('САМАЯ ЛУЧШАЯ КЛАССНАЯ ИГРА 100% КЛУБНЯК 2007')
 
 #счётчикиНЕ ТРОГАТЬ
 fps = 60
@@ -32,6 +37,7 @@ lost = 0
 a = True
 b = 0
 c = 0
+d = randint(1,2)
 fail1=0
 fail2=0
 finish = True
@@ -39,14 +45,14 @@ game = True
 set_clicked = False
 gamecont = False
 vol = 0.5
+vol_counter = 5
 player1_name = 'EXAMPLE1'
 player2_name = 'EXAMPLE2'
 diff_count = 0
 difficulty = "Normal"
 music = 0
 back = randint(0,4)
-
-
+paused_con = False
 
 
 
@@ -72,7 +78,7 @@ class Player_1(GameSprite):
         if difficulty == "Easy":
             self.speed = 20
         if difficulty == "Normal":
-            self.speed = self.speed
+            self.speed = 10
         if difficulty == "Hard":
             self.speed = 7.5
         if keys[K_UP] and self.rect.y > 55:
@@ -86,7 +92,7 @@ class Player_2(GameSprite):
         if difficulty == "Easy":
             self.speed = 20
         if difficulty == "Normal":
-            self.speed = self.speed
+            self.speed = 10
         if difficulty == "Hard":
             self.speed = 7.5
         if keys[K_w] and self.rect.y > 55:
@@ -102,21 +108,24 @@ class Ball(GameSprite):
         if difficulty == "Easy":
             self.speed = 5
         if difficulty == "Normal":
-            self.speed = self.speed
+            self.speed = 12.5
         if difficulty == "Hard":
             self.speed = 20
         if sprite.collide_rect(ball, player2):
             a = True
+            bounce1.play()
             rand = randint(1,2)
             if rand == 1:
                 b = 1
             if rand == 2:
                 b = 2
         if sprite.collide_rect(ball, wall1):
+            bounce2.play()
             b = 3
             self.rect.y += self.speed
             self.rect.x -= self.speed
         if sprite.collide_rect(ball, wall2):
+            bounce2.play()
             rand2 = randint(10,11)
             if rand2 == 10:
                 c = 2
@@ -149,14 +158,17 @@ class Ball(GameSprite):
         global a
         global b
         global c
+        global d
         if sprite.collide_rect(ball, player1):
             a = False
+            bounce1.play()
             rand = randint(3,4)
             if rand == 3:
                 b = 3
             if rand == 4:
                 b = 4
         if sprite.collide_rect(ball, wall1):
+            bounce2.play()
             rand2 = randint(10,11)
             if rand2 == 10:
                 c = 2
@@ -204,10 +216,10 @@ class Button():
         return self.rect.collidepoint(x, y)
 
 msg = QMessageBox()
-msg.setWindowTitle("Error!")
+msg.setWindowTitle("Warning!")
 msg.setText("Enter Players Names in settings first!")
-volume = stat_font.render('Sound volume', 1, (255, 255, 255))
-volume_counter = stat_font.render(str(vol), 1, (255, 255, 255))
+volume = stat_font.render('Music volume', 1, (255, 255, 255))
+volume_counter = stat_font.render(str(vol_counter), 1, (255, 255, 255))
 pname = stat_font.render('Players Names', 1, (255, 255, 255))
 diff = stat_font.render('Difficulty', 1, (255, 255, 255))
 diff_counter = stat_font.render(difficulty, 1, (145, 126, 31))
@@ -249,40 +261,53 @@ while game:
             x, y = e.pos
             if finish == True and set_clicked == False:
                 if btn_start.collide_point(x, y):
+                    button_click.play()
                     if player1_name == 'EXAMPLE1' and player2_name == 'EXAMPLE2':
+                        warn.play()
                         msg.exec()
                     else:
                         finish = False
                 if btn_set.collide_point(x, y):
+                    button_click.play()
                     set_clicked = True
             if finish == True and set_clicked == True:
                 if btn_BACK.collide_point(x, y):
+                    button_click.play()
                     set_clicked = False
                 if btn_volumeDOWN.collide_point(x,y):
+                    button_click.play()
                     vol -= 0.1
+                    vol_counter -= 1
                     menumusic.set_volume(vol)
                     ingame.set_volume(vol)
                     if vol < 0:
                         vol = 0
-                    volume_counter = stat_font.render(str(vol), 1, (255, 255, 255))
+                        vol_counter = 0
+                    volume_counter = stat_font.render(str(vol_counter), 1, (255, 255, 255))
                 if btn_volumeUP.collide_point(x,y):
+                    button_click.play()
                     vol += 0.1
-                    if vol > 1:
+                    vol_counter += 1
+                    if vol > 0.91:
                         vol = 1
+                        vol_counter = 10
                     menumusic.set_volume(vol)
                     ingame.set_volume(vol)
-                    volume_counter = stat_font.render(str(vol), 1, (255, 255, 255))
+                    volume_counter = stat_font.render(str(vol_counter), 1, (255, 255, 255))
                 if btn_p1name.collide_point(x,y):
+                    button_click.play()
                     p1, ok = ask1.getText(xuindow, 'Player 1', 'Enter Player Name')
                     if ok and p1:
                         player1_name = str(p1)
                 if btn_p2name.collide_point(x,y):
+                    button_click.play()
                     p2, ok = ask2.getText(xuindow, 'Player 2', 'Enter Player 2 Name')
                     if ok and p2:
                         player2_name = str(p2)
                     #здесь p1 и ok отвечают за 2 типа данных, которые выдает .getText - p1 это string, ok - True или False,
                     #ok мне не нужна, и поэтому я просто беру и печатаю p1 которая забрала в себя строку, введеную пользователем
                 if btn_diffUP.collide_point(x,y):
+                    button_click.play()
                     diff_count += 1
                     if diff_count > 2:
                         diff_count = 2
@@ -294,6 +319,7 @@ while game:
                         difficulty = "Hard"
                     diff_counter = stat_font.render(difficulty, 1, (145, 126, 31))
                 if btn_diffDOWN.collide_point(x,y):
+                    button_click.play()
                     diff_count -= 1
                     if diff_count < 0:
                         diff_count = 0
@@ -306,6 +332,7 @@ while game:
                     diff_counter = stat_font.render(difficulty, 1, (145, 126, 31))
             if finish == True and gamecont == True and set_clicked == False:
                 if btn_BACKtoMAIN.collide_point(x,y):
+                    button_click.play()
                     lost = 0
                     a = True
                     b = 0
@@ -318,8 +345,6 @@ while game:
                     ball_speed = 10
                     gamecont = False
                     vol = 0
-                    player1_name = 'EXAMPLE1'
-                    player2_name = 'EXAMPLE2'
                     player1.rect.x = 10 
                     player1.rect.y = 320
                     player2.rect.x = 650
@@ -347,6 +372,7 @@ while game:
             window.blit(background5, (0,0))
         else:
             window.blit(background, (0,0))
+        paused_con = False
         player1.reset()
         player1.update()
         player2.reset()
@@ -394,8 +420,6 @@ while game:
             ball_speed = 10
             gamecont = False
             vol = 0
-            player1_name = 'EXAMPLE1'
-            player2_name = 'EXAMPLE2'
             player1.rect.x = 10 
             player1.rect.y = 320
             player2.rect.x = 650
@@ -417,8 +441,9 @@ while game:
                 window.blit(background5, (0,0))
             else:
                 window.blit(background, (0,0))
+            paused_con = False
             btn_start.set_text('Start the game', 38)
-            menu_text = winlose_font.render('Menu', 1, (180, 0, 0))
+            menu_text = winlose_font.render('Ping!', 1, (180, 0, 0))
             window.blit(menu_text, (300, 50))
             btn_start.draw()    
             btn_set.draw()
@@ -435,6 +460,7 @@ while game:
                 window.blit(background5, (0,0))
             else:
                 window.blit(background, (0,0))
+            paused_con = True
             btn_start.set_text('Continue?', 52)
             menu_text = winlose_font.render('PAUSED', 1, (180, 0, 0))
             window.blit(menu_text, (250, 50))
@@ -454,6 +480,7 @@ while game:
                 window.blit(background5, (0,0))
             else:
                 window.blit(background, (0,0))
+            paused_con = False
             btn_volumeUP.draw()
             btn_volumeDOWN.draw()
             btn_BACK.draw()
@@ -468,23 +495,25 @@ while game:
             window.blit(p2name, (5,155))
             window.blit(diff, (530, 80))
             window.blit(diff_counter, (525,45))
-    if set_clicked == False and gamecont == False and music < 1:
-        ingame.stop()
+    if set_clicked == False and gamecont == False and music < 1 and paused_con == False:
         menumusic.play(-1)
+        paused.stop()
+        ingame.stop()
         vol = 0.5
         music += 1
         menumusic.set_volume(vol)
         print(music)
-    if finish == False and music == 1:
+    if finish == False and music == 1 and paused_con == False:
         music = 0
+        paused.stop()
         menumusic.stop()
-        ingame.play()
+        ingame.play(-1)
         print(music)
-    if set_clicked == True and gamecont == True and music == 1:
-        music = 0
+    if paused_con == True and music == 0:
+        music = 1
         ingame.stop()
-        menumusic.stop()
-        paused.play()
+        paused.play(-1)
+        paused.set_volume(vol)
 
 
     display.update()
